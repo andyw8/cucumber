@@ -168,7 +168,7 @@ Feature: Cucumber command line
       """
 
   Scenario: --dry-run
-    When I run cucumber --dry-run --no-source features/*.feature --tags ~@lots
+    When I run cucumber --dry-run --no-source features/*.feature --tags ~@lots --tags ~@outline_sample
     Then it should pass with
       """
       Feature: Calling undefined step
@@ -549,7 +549,34 @@ Feature: Cucumber command line
             \"\"\"
 
 
+       """
+
+  Scenario: Reformat files with --autoformat for a scenario outline with tagged groups
+    When I run cucumber --autoformat tmp/formatted features
+    Then STDERR should be empty
+    And "fixtures/self_test/tmp/formatted/features/outline_sample_with_tags.feature" should contain
       """
+      @outline_sample
+      Feature: Outline sample with tags
+
+        @five
+        Scenario Outline: 
+          Given passing
+
+          @six
+          Examples: Group 1
+            | foo |
+            | a   |
+            | b   |
+
+          @seven
+          Examples: Group 2
+            | foo |
+            | c   |
+            | d   |
+
+
+        """
 
   # Fails on 1.9 because of encoding issues.
   @fails_on_1_9
